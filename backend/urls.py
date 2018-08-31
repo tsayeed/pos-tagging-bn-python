@@ -1,4 +1,4 @@
-"""pos_tagging URL Configuration
+"""backend URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -13,9 +13,19 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.http import HttpRequest, HttpResponse
+from django.urls import path, include, re_path
 from django.contrib import admin
+from django.views.generic import TemplateView
+
+def render_static(request: HttpRequest):
+    file = request.path.strip('/')
+    return TemplateView.as_view(template_name=file)(request)
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("api/", include('backend.api.urls')),
+    path("", TemplateView.as_view(template_name='index.html')),
+    re_path(".html$", render_static),
+
 ]
